@@ -1,0 +1,33 @@
+name: Example GitHub Workflow to leverage Dagger Pipeline Templates
+
+runs:
+  steps:
+    - name: Pipeline Init
+
+    # - name: Docker Lint
+
+    # - name: Trufflehog
+    
+    # - name: Build Source
+
+    # - name: Source Linting
+    
+    # - name: Unit Tests
+    
+    # - name: Dependency Check
+
+    # - name: Build image/s
+
+    # - name: Neuvector Scan
+
+    - name: Create Zarf Package
+      run: dpt package create
+        # detect zarf.yaml, create if DNE, and then create package
+
+    - name: Publish Zarf Package
+
+    - name: Deploy Zarf Package to Staging
+    
+    - name: Run Integration Tests
+
+    - name: Release
