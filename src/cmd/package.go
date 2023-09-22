@@ -18,9 +18,8 @@ var packageCreateCmd = &cobra.Command{
 	Long:  `dpt package create`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runner := dagger.SetupDagger()
-		zarf.SetupZarf(runner)
-		// zarf.CreateZarfPackageConfig(runner)
-		//TODO zarf.buildZarfPackage()
+		defer runner.Client.Close()
+		zarf.BuildZarfPackage(runner)
 	},
 }
 

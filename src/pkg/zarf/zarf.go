@@ -37,7 +37,7 @@ func init() {
 	zarfVersion = []string{"./" + filename, "version"}
 }
 
-func SetupZarf(runner *types.RunnerContainer) {
+func BuildZarfPackage(runner *types.RunnerContainer) {
 	container := runner.Runner
 	container = container.WithWorkdir("./project").WithExec(wgetZarf).WithExec(chmodZarf).WithExec(zarfVersion)
 	out, err := container.Stdout(runner.Ctx)
@@ -55,7 +55,8 @@ func SetupZarf(runner *types.RunnerContainer) {
 		os.Exit(1)
 	}
 	message.Info(out + " found. Building Zarf package...")
-	out, err = container.WithDirectory(".", runner.Client.Host().Directory(".")).WithExec([]string{"./" + filename, "package", "create", "--confirm"}).Stdout(runner.Ctx)
+	container = container.WithDirectory(".", runner.Client.Host().Directory(".")).WithExec([]string{"./" + filename, "package", "create", "--confirm"})
+	out, err = container.Stdout(runner.Ctx)
 	if err != nil {
 		panic(err)
 	}
