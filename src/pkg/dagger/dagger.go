@@ -19,5 +19,5 @@ func SetupDagger() *types.RunnerContainer {
 	runner := client.Container().
 		From("golang:1.20")
 
-	return types.NewRunnerContainer(ctx, runner)
+	return types.NewRunnerContainer(ctx, runner, client)
 }

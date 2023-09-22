@@ -3,14 +3,17 @@ package zarf
 import (
 	"fmt"
 	"main/src/pkg/dagger/types"
+	"main/src/pkg/message"
+	"os"
 	"runtime"
 )
 
 var (
-	arch, os   string
-	wgetZarf   []string
-	chmodZarf  []string
+	arch        string
+	wgetZarf    []string
+	chmodZarf   []string
 	zarfVersion []string
+	filename    string
 )
 
 func init() {
@@ -27,28 +30,34 @@ func init() {
 	// Construct the variables based on `arch` and `os`
 	version := "v0.29.2"
 	baseURL := "https://github.com/defenseunicorns/zarf/releases/download"
-	filename := fmt.Sprintf("zarf_%s_%s_%s", version, "Linux", arch)
+	filename = fmt.Sprintf("zarf_%s_%s_%s", version, "Linux", arch)
 
 	wgetZarf = []string{"wget", fmt.Sprintf("%s/%s/%s", baseURL, version, filename)}
 	chmodZarf = []string{"chmod", "+x", filename}
 	zarfVersion = []string{"./" + filename, "version"}
 }
 
-// var (
-// 	wgetZarf    = []string{"wget", "https://github.com/defenseunicorns/zarf/releases/download/v0.29.2/zarf_v0.29.2_Linux_arm64"}
-// 	chmodZarf   = []string{"chmod", "+x", "zarf_v0.29.2_Linux_arm64"}
-// 	zarfVersion = []string{"./zarf_v0.29.2_Linux_arm64", "version"}
-	
-// )
-
 func SetupZarf(runner *types.RunnerContainer) {
 	container := runner.Runner
-	container = container.WithWorkdir("/bin").WithExec(wgetZarf)
-	container = container.WithExec(chmodZarf)
-
-	out, err := container.WithExec(zarfVersion).Stdout(runner.Ctx)
+	container = container.WithWorkdir("./project").WithExec(wgetZarf).WithExec(chmodZarf).WithExec(zarfVersion)
+	out, err := container.Stdout(runner.Ctx)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Using Zarf Version: " + out)
+
+	out, err = container.
+		WithDirectory(".", runner.Client.Host().Directory(".")).
+		WithExec([]string{"ls", "zarf.yaml"}).
+		Stdout(runner.Ctx)
+	if err != nil {
+		message.TellUserOnFail("zarf.yaml not found", "Please create a zarf.yaml")
+		os.Exit(1)
+	}
+	message.Info(out + " found. Building Zarf package...")
+	out, err = container.WithExec([]string{"./" + filename, "package", "create", "--confirm"}).Stdout(runner.Ctx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(out)
 }

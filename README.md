@@ -78,5 +78,3 @@ OR MAYBE EVEN THIS...
 Given Software Factory
 1. Interact with a UI to create a new project
 ```
-
-
