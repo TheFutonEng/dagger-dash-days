@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      contents: write
     steps:
       # Checkout the repo and setup the tooling for this job
       - name: Checkout
