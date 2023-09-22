@@ -24,22 +24,10 @@ func init() {
 		arch = "unknown"
 	}
 
-	// Determine OS
-	switch runtime.GOOS {
-	case "linux":
-		os = "Linux"
-	case "darwin":
-		os = "Darwin/OSX"
-	case "windows":
-		os = "Windows"
-	default:
-		os = "unknown"
-	}
-
 	// Construct the variables based on `arch` and `os`
 	version := "v0.29.2"
 	baseURL := "https://github.com/defenseunicorns/zarf/releases/download"
-	filename := fmt.Sprintf("zarf_%s_%s_%s", version, os, arch)
+	filename := fmt.Sprintf("zarf_%s_%s_%s", version, "Linux", arch)
 
 	wgetZarf = []string{"wget", fmt.Sprintf("%s/%s/%s", baseURL, version, filename)}
 	chmodZarf = []string{"chmod", "+x", filename}
