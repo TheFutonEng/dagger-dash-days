@@ -1,80 +1,112 @@
 # dagger-dash-days
-Dagger repo for dash days
 
-_Goal's_
-- We want capability providers/developers to focus on what they're building - not on how to build/deploy/test/ATO/security-scan/all-the-things it
-- We want capability providers/developers to focus on what they're building AND make it easy to leverage Defense Unicorns ecosystem
-  - don't have a zarf.yaml - no problem
-  - don't have a Dockerfile - no problem
-  - only have src code - no problem
-  - ...
-- We (Unicorns) want to deploy anything, anywhere. This can only be accomplished with some opinionation. This project is an effort to standarize and opinionate the BEST way to get source code to prod in/for highly regulated environments.
+Dagger Pipeline Templates (`dpt`) is a cli tool that can be used local and in Git[Hub/Lab] pipelines alike.
 
+## Goal
 
-## TODOs
+> Create a portable pipeline that could enable Developers to focus on what they're building. 
+> 
+> NOT on how to build/deploy/test/ATO/security-scan/all-the-things
 
-TODO:
-- [x] go library and cli
-- [x] inst  zarf.yaml
-- [ ] detect zarf.yaml ? init zarf.yaml : be happy
-- [ ] zarf package create
-- [ ] Do it in a github pipeline
-  - [ ] `cp dagger-dash-days/examples/github/main.yaml <pod-info>/.github/workflows/main.yaml`
-- [ ] Do it in a gitlab pipeline
-  - [ ] `cp dagger-dash-days/examples/gitlab/main.yaml <pod-info>/.gitlab-ci.yaml`
+We want to enable developers to leverage the Defense Unicorns ecosystem without becoming experts in it. 
 
-TODO - Extra Credit and General Questions:
-- [ ] Use Ironbank images
-- [ ] can we define GH workflow and make examples/github/main.yaml stupid simple?
-  - [ ] ? https://docs.github.com/en/actions/using-workflows/creating-starter-workflows-for-your-organization
-    ```yaml
-    name: Example GitHub Workflow to leverage Dagger Pipeline Templates
+## Quick Start
 
-    runs:
-        steps:
-            - name: all-things
-            uses: defenseunicorns/dagger-pipeline-templates@main
-    ```
+1. Copy github workflow to your project
+```
+cp dagger-dash-days/examples/github/main.yaml <YOUR-PROJECT>/.github/workflows/main.yaml
+```
+
+2. That's it... you're done. Just go write code.
+
+### Okay, but really
+
+All of the work is done in `dpt` the github workflow is just a simple wrapper to leverage it. The same would be true for a `gitlab-ci` or a `jenkinsfile`
+
+If a project doesn't have a `zarf.yaml` file, `dpt` will let the developer know exactly what needs to happen... (in the future will create a `zarf.yaml` for them)
+
+The Vision: dpt would have the BEST defaults for all the things. So that a developer can just write code and not worry about the rest. The pipeline stages would fail, but provide clear indicators and help to the developers on what needs to be done to fix it.
 
 ## What Pain are we solving?
 
-### Capability Provider creates a new project
+```mermaid
+graph TD
+    style A fill:##2196F3,stroke:#1565C0,stroke-width:5px
+    style B fill:##2196F3,stroke:#1976D2,stroke-width:5px
+    style C fill:#1f8f1b,stroke:#1976D2,stroke-width:5px
+    style D fill:#1f8f1b,stroke:#1976D2,stroke-width:5px
+    style E fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style F fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style G fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style H fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style I fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style J fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style K fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style L fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style M fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style N fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style O fill:##a13310,stroke:#E64A19,stroke-width:5px
+    style P fill:##a13310,stroke:#E64A19,stroke-width:5px
+    
+    A[Developer Goal: release my capability]
+    B[init repo: src/, Dockerfile, Makefile]
+    C[use dpt copy/paste .github/workflows/main.yaml]
+    D[write codezzzz]
 
-Goal: Release my capability
-FROM THIS....
-```
-1. init repo (src/, Dockerfile, Makefile, etc...)
-2. pipelines
-   1. docker lint stage
-   2. trufflehog (password scanning)
-   3. build src
-   4. lint
-   5. unit tests
-   6. dependecny check
-   7. build image/s
-   8. neuvector scan
-   9. build zarf package
-   10. publish zarf package
-   11. deploy staging
-   12. run integration tests
-   13. release
+    E[docker lint stage]
+    F[trufflehog: password scanning]
+    G[build src]
+    H[lint]
+    I[unit tests]
+    J[dependency check]
+    K[build image/s]
+    L[neuvector scan]
+    M[build zarf package]
+    N[publish zarf package]
+    O[deploy staging]
+    P[run integration tests]
+    choose{suck life \n or \n not suck life}
+
+    A --First--> B
+    B --> choose
+    choose --not suck life--> C
+    choose --suck life--> E
+    C --> D
+
+    E --still sucks--> F
+    F --still sucks--> G
+    G --still sucks--> H
+    H --still sucks--> I
+    I --still sucks--> J
+    J --still sucks--> K
+    K --still sucks--> L
+    L --still sucks--> M
+    M --still sucks--> N
+    N --still sucks--> O
+    O --still sucks--> P
+    P --> D
 ```
 
-TO THIS...
+
+## Just try it
+
 ```
-#github
-1. init repo (src/, Dockerfile, Makefile)
-2. goto dpt/examples/github/main.yaml
-   1. copy past to .github/workflows/main.yaml
----
-#gitlab
-1. init repo (src/, Dockerfile, Makefile)
-2. goto dpt/examples/gitlab/main.yaml
-   1. copy paste to .gitlab-ci.yaml
+cd test/pod-info && go run ../../main.go package create
 ```
 
-OR MAYBE EVEN THIS...
-```
-Given Software Factory
-1. Interact with a UI to create a new project
-```
+## TODOs
+
+- [x] go library and cli
+- [x] inst  zarf.yaml
+- [ ] detect zarf.yaml ? init zarf.yaml : be happy
+- [x] zarf package create
+- [x] Do it in a github pipeline
+  - [x] `cp dagger-dash-days/examples/github/main.yaml <pod-info>/.github/workflows/main.yaml`
+- [ ] Do it in a gitlab pipeline
+  - [ ] `cp dagger-dash-days/examples/gitlab/main.yaml <pod-info>/.gitlab-ci.yaml`
+- [ ] expand use cases, maybe integrate buildpacks???
+- [ ] Use Ironbank images
+- [ ] Use Zarf registry (runtime)
+- [ ] Publish Zarf Package
+- [ ] Deploy Package (easy user configuration for target environment)
+- [ ] Make the CLI better (better output, logging, help, etc....)
