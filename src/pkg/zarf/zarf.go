@@ -55,7 +55,7 @@ func SetupZarf(runner *types.RunnerContainer) {
 		os.Exit(1)
 	}
 	message.Info(out + " found. Building Zarf package...")
-	out, err = container.WithExec([]string{"./" + filename, "package", "create", "--confirm"}).Stdout(runner.Ctx)
+	out, err = container.WithDirectory(".", runner.Client.Host().Directory(".")).WithExec([]string{"./" + filename, "package", "create", "--confirm"}).Stdout(runner.Ctx)
 	if err != nil {
 		panic(err)
 	}
